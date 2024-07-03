@@ -18,7 +18,7 @@ from src.utils import save_object
 
 @dataclass
 class DataTransformationConfig:
-    preprocessor_obj_file_path=os.path.join('artifacts',"preprocessor.pkl")
+    preprocessor_obj_file_path=os.path.join('artifacts',"proprocessor.pkl")
 
 class DataTransformation:
     def __init__(self):
@@ -26,13 +26,13 @@ class DataTransformation:
 
     def get_data_transformer_object(self):
         try:
-            numerical_columns = ["writing_score", "reading_score", "math_score"]
+            numerical_columns = ["writing_score", "reading_score"]
             categorical_columns = ["gender", "race_ethnicity", "parental_level_of_education", "lunch", "test_preparation_course"]
             #for numerical features we are creating a pipeline
             num_pipeline = Pipeline(
                 steps=[
                     ('imputer', SimpleImputer(strategy='median')),#handling missing values replacing all the missing values with median
-                    ('std_scaler', StandardScaler())#standard scaling
+                    ('scaler', StandardScaler())#standard scaling
                 ]
             )
 
@@ -40,7 +40,7 @@ class DataTransformation:
                 steps=[
                     ('imputer', SimpleImputer(strategy='most_frequent')),#handling missing values replacing all the missing values with mode
                     ('onehot', OneHotEncoder()),#one hot encoding
-                    ("scalar", StandardScaler())#standard scaling
+                    ("scalar", StandardScaler(with_mean=False))#standard scaling
                 ]
             )
 
