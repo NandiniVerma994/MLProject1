@@ -4,6 +4,8 @@ import os
 import sys
 import dill
 
+from sklearn.metrics import r2_score
+
 from src.exception import CustomException
 #save object is defined in the data transformation 
 #it will take the file path and object makes directory
@@ -17,5 +19,31 @@ def save_object(file_path, obj):
         with open(file_path, "wb") as file_obj:
             dill.dump(obj, file_obj)
 
+    except Exception as e:
+        raise CustomException(e, sys)
+    
+def evaluate_model(X_train,y_train,X_test,y_test,models):
+    try:
+        report={}
+
+        for i in range(len(list(models))):
+            model = list(models.values())[i]#iterating over each and every model one by one
+
+            model.fit(X_train, y_train)#train model
+
+            y_train_pred = model.predict(X_train)#predict on X_train data
+
+            y_test_pred = model.predict(X_test)#predict on test data
+            #The purpose of this line is to evaluate how well the model has
+            #  learned from the training data by comparing these predictions
+            #  (y_train_pred) against the actual outcomes (y_train
+            train_model_score = r2_score(y_train, y_train_pred)#r2 score on train data
+
+            test_model_score = r2_score(y_test, y_test_pred)#r2 score on test data  
+
+            report[list(models.keys())[i]] = test_model_score#storing the r2 score of each model in the report dictionary
+
+        return report
+    
     except Exception as e:
         raise CustomException(e, sys)
